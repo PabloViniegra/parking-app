@@ -1,0 +1,101 @@
+# Node modules and installed dependencies
+node_modules/
+lib/
+
+# Build outputs
+public/
+dist/
+build/
+.eggs/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+devenv/
+
+# Test coverage reports
+coverage/
+coverage-reports/
+
+# Graphify own output (don't analyze itself)
+graphify-out/
+
+# Git internals
+.git/
+
+# Agent skills / tooling (markdown-only, no code value)
+.agents/
+.claude/
+.codex/
+
+# Project docs
+docs/
+
+# Doc formats that require LLM (no tree-sitter parser)
+*.md
+*.markdown
+*.txt
+*.rst
+*.html
+*.htm
+*.yaml
+*.yml
+*.sh
+*.bash
+*.xml
+*.csv
+*.ini
+*.cfg
+*.toml
+*.conf
+*.lcl
+
+# Files that require LLM (binary/media)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.ico
+*.bmp
+*.tiff
+*.tif
+*.pdf
+*.mp4
+*.mov
+*.mp3
+*.wav
+*.avi
+*.mkv
+*.webm
+*.ogg
+*.docx
+*.xlsx
+*.pptx
+*.doc
+*.xls
+*.ppt
+
+# Compiled artifacts
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.map
+*.snap
+
+# Lock files
+yarn.lock
+package-lock.json
+Pipfile.lock
+
+# IDE metadata
+.idea/
+.vscode/
+*.iml
+
+# Environment / secrets
+.env
+.env.*

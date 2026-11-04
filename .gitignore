@@ -52,3 +52,4 @@ supabase/.temp/
 
 # Vercel
 .vercel/
+graphify-out/
