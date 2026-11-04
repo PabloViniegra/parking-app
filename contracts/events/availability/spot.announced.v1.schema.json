@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/PabloViniegra/parking-app/contracts/events/availability/spot.announced.v1.schema.json",
+  "title": "availability.spot.announced.v1 data",
+  "type": "object",
+  "required": ["spot_id", "coverage_id", "cell_r10", "confidence"],
+  "properties": {
+    "spot_id": { "type": "string", "format": "uuid" },
+    "coverage_id": { "type": "string", "format": "uuid" },
+    "cell_r10": { "type": "string", "pattern": "^[0-9]+$" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "additionalProperties": false
+}

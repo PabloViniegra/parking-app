@@ -61,6 +61,7 @@ Prerequisites: Go 1.26, Node 24 with pnpm 11, [uv](https://docs.astral.sh/uv/), 
 make setup        # pnpm install, uv sync, go mod download
 make check        # all linters, type-checkers and tests
 make core-run     # core API on http://localhost:8080 (GET /healthz)
+make core-integration # PostgreSQL adapter tests (run make db-start first)
 make mobile-start # Expo dev server (requires a development build on the device)
 make db-start     # local Supabase via npx supabase
 ```
@@ -113,21 +114,24 @@ parking-app/
 ### Accounts & projects
 - [x] Create Supabase project (Free) in an EU region; enable PostGIS, `pg_cron`, `pg_net`.
 - [ ] Enable **anonymous sign-ins** in Supabase Auth.
-- [ ] Create Vercel project (Hobby) for `services/core`; pin the function region to the same EU area as Supabase.
+- [x] Create Vercel project for `services/core`; deploy `/healthz` in Paris (`cdg1`), matching Supabase `eu-west-3`.
 - [ ] Create Expo account + EAS project; configure FCM (Android) and APNs (iOS) credentials for Expo Push.
 - [x] Create GitHub repository — public, so `services/vision` can be scheduled on GitHub Actions (see ADR-0014).
 
 ### Technical spikes (validate before building on them)
-- [ ] **Spike 1 — Go on Vercel:** single entrypoint routing to the modular monolith; measure cold start and p95 latency against Supabase pooler.
-- [ ] **Spike 2 — Timers:** `pg_cron` every 5 s + `pg_net` POST to `/internal/timers/fire`, only when timers are due. Measure drift.
+- [ ] **Spike 1 — Go on Vercel:** health endpoint deploys successfully; still measure cold start and p95 latency against the Supabase pooler.
+- [ ] **Spike 2 — Timers:** local `pg_cron` accepted and ran a 5 s job; still validate `pg_net` POST to `/internal/timers/fire` only when timers are due, and measure drift.
 - [ ] **Spike 3 — Departure detection:** Expo dev client + native modules (activity recognition, Bluetooth connect) on Android and iOS; measure battery.
 - [ ] **Spike 4 — Expo Push latency:** server → device p95 with high priority and short TTL.
 
 ### Scaffolding
 - [x] Monorepo skeleton as above; Go module with architecture tests (`internal/archtest`) enforcing module boundaries.
-- [ ] Supabase migrations for the core tables (see ARCHITECTURE.md §6).
-- [ ] Contracts: first version of event schemas and OpenAPI (envelope schema and `/healthz` done).
-- [ ] CI: lint + tests + architecture tests for Go; lint + type-check for mobile; migrations check (all but the migrations check done).
+- [x] Initial Supabase migrations for Coverage, Spots, outbox and timers (see ARCHITECTURE.md §6).
+- [ ] Load a verified Comunidad de Madrid boundary and activate its Coverage area; it remains inactive until then.
+- [x] Contract: `availability.spot.announced.v1` event schema.
+- [x] Hourly retention: aggregate Spots by H3 cell and UTC day, delete individual Spots after 23 hours, and retain outbox payloads without Releaser identifiers for seven days.
+- [ ] OpenAPI: envelope schema and `/healthz` are done; `/v1` routes remain to be defined before handlers.
+- [x] CI: lint + tests + architecture tests for Go; lint + type-check for mobile; local migration and PostgreSQL adapter checks.
 - [ ] Ingestion: OSM street parking + Madrid SER loaded for Comunidad de Madrid.
 - [ ] Keep-alive workflow for Supabase during development (free projects pause after 7 days idle).
 

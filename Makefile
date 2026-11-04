@@ -2,7 +2,7 @@ GOLANGCI_LINT := go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v
 CORE := services/core
 
 .PHONY: setup check test lint fmt \
-	core-test core-lint core-fmt core-run \
+	core-test core-integration core-lint core-fmt core-run \
 	mobile-test mobile-lint mobile-typecheck mobile-start \
 	py-test py-lint py-fmt \
 	db-start db-stop db-reset
@@ -25,6 +25,9 @@ fmt: core-fmt py-fmt
 
 core-test:
 	cd $(CORE) && go test -race ./...
+
+core-integration:
+	cd $(CORE) && DATABASE_URL="$${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres}" go test -race -tags=integration ./internal/availability/adapters/postgres ./internal/coverage/adapters/postgres
 
 core-lint:
 	cd $(CORE) && go vet ./... && $(GOLANGCI_LINT) run ./...

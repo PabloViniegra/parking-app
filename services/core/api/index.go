@@ -4,10 +4,10 @@ package handler
 import (
 	"net/http"
 
-	"github.com/PabloViniegra/parking-app/services/core/internal/bootstrap"
+	"github.com/PabloViniegra/parking-app/services/core/entrypoint"
 )
 
-var router = bootstrap.NewRouter()
+var router = entrypoint.NewRouter()
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	router.ServeHTTP(w, r)
