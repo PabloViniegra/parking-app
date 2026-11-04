@@ -31,3 +31,9 @@ Adapters are enabled per Coverage area in `coverage_areas.enabled_sources`. Addi
 - Madrid open data: municipal licence with attribution clause.
 - DGT NAP: check licence per dataset (several are Creative Commons).
 - Cameras: images are processed transiently and never redistributed.
+
+## Coverage boundary
+
+The Comunidad de Madrid Coverage boundary comes from the **Instituto Geográfico Nacional de España (IGN)**, Base de Datos de Divisiones Administrativas de España, distributed by the **Centro Nacional de Información Geográfica (CNIG)**. The [dataset metadata](https://www.idee.es/csw-codsi-idee/srv/api/records/spaignLLM) specifies CC BY 4.0; see also the [IGN data policy](https://centrodedescargas.cnig.es/CentroDescargas/politica-datos). Attribution: © Instituto Geográfico Nacional de España / Centro Nacional de Información Geográfica.
+
+The [administrative-unit feature](https://api-features.ign.es/collections/administrativeunit/items/1174523?f=json), national code `34130000000`, was retrieved on 2026-11-04 (UTC). SHA-256 of the original response: `d87f2d69597e2f006df241e2b3d40f269f50f6bc8187803bb2dc151d79a43be9`. The migration stores its unmodified geometry as longitude/latitude in SRID 4326; updates require a new reviewed migration. The IGN notes that boundaries generally have an uncertainty of around 40 m and some segments may be provisional. Coverage decisions near the boundary therefore have the same limitations.

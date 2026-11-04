@@ -127,7 +127,7 @@ parking-app/
 ### Scaffolding
 - [x] Monorepo skeleton as above; Go module with architecture tests (`internal/archtest`) enforcing module boundaries.
 - [x] Initial Supabase migrations for Coverage, Spots, outbox and timers (see ARCHITECTURE.md §6).
-- [ ] Load a verified Comunidad de Madrid boundary and activate its Coverage area; it remains inactive until then.
+- [x] Load the IGN Comunidad de Madrid boundary and activate its Coverage area through a migration. See [source and attribution](docs/data-sources/DATA_SOURCES.md#coverage-boundary) and apply the migration to each environment separately.
 - [x] Contract: `availability.spot.announced.v1` event schema.
 - [x] Hourly retention: aggregate Spots by H3 cell and UTC day, delete individual Spots after 23 hours, and retain outbox payloads without Releaser identifiers for seven days.
 - [ ] OpenAPI: envelope schema and `/healthz` are done; `/v1` routes remain to be defined before handlers.
