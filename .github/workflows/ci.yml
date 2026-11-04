@@ -41,6 +41,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
+      - run: pnpm oxlint
       - run: pnpm -C apps/mobile lint
       - run: pnpm -C apps/mobile typecheck
       - run: pnpm -C apps/mobile test --ci

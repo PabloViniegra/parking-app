@@ -17,6 +17,7 @@ check: lint test
 test: core-test mobile-test py-test
 
 lint: core-lint mobile-lint mobile-typecheck py-lint
+	pnpm oxlint
 	pnpm format:check
 
 fmt: core-fmt py-fmt

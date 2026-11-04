@@ -7,12 +7,14 @@
   },
   "scripts": {
     "lint": "pnpm -r --if-present lint",
+    "oxlint": "oxlint --deny-warnings",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
   },
   "devDependencies": {
-    "prettier": "^3.6.2"
+    "oxfmt": "^0.76.0",
+    "oxlint": "^1.91.0"
   }
 }
