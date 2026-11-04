@@ -5,7 +5,7 @@ CORE := services/core
 	core-test core-integration core-lint core-fmt core-run \
 	mobile-test mobile-lint mobile-typecheck mobile-start \
 	py-test py-lint py-fmt \
-	db-start db-stop db-reset
+	db-start db-stop db-reset db-test
 
 setup:
 	pnpm install
@@ -71,3 +71,6 @@ db-stop:
 
 db-reset:
 	npx supabase db reset
+
+db-test:
+	npx supabase test db

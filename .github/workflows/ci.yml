@@ -42,6 +42,7 @@ jobs:
           version: 3.0.0
       - run: supabase start
       - run: supabase db reset
+      - run: supabase test db
       - run: go test -race -tags=integration ./internal/availability/adapters/postgres ./internal/coverage/adapters/postgres
         working-directory: services/core
         env:
