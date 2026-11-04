@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/PabloViniegra/parking-app/contracts/events/envelope.schema.json",
+  "title": "CloudEvents 1.0 envelope for parking-app domain events",
+  "type": "object",
+  "required": ["specversion", "id", "source", "type", "time", "subject", "datacontenttype", "data"],
+  "properties": {
+    "specversion": { "const": "1.0" },
+    "id": { "type": "string", "format": "uuid" },
+    "source": { "type": "string", "pattern": "^/(core|mobile|ingestion|vision)(/[a-z]+)?$" },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z]+\\.[a-z]+\\.[a-z]+\\.v[0-9]+$",
+      "description": "<context>.<entity>.<past-tense>.v<n>"
+    },
+    "time": { "type": "string", "format": "date-time" },
+    "subject": {
+      "type": "string",
+      "description": "Aggregate id, e.g. the spot id used as correlation id"
+    },
+    "datacontenttype": { "const": "application/json" },
+    "data": { "type": "object" }
+  },
+  "additionalProperties": false
+}

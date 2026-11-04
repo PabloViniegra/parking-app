@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: parking-app core API
+  version: 0.1.0
+  description: Contract-first definition of the core API. Change this file before changing handlers.
+servers:
+  - url: /
+paths:
+  /healthz:
+    get:
+      operationId: getHealth
+      summary: Liveness probe
+      responses:
+        '200':
+          description: The service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    const: ok
+components:
+  securitySchemes:
+    supabaseJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token issued by Supabase Auth (anonymous sign-in). Required on every /v1 path.
