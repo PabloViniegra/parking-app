@@ -111,7 +111,7 @@ parking-app/
 ## Initialization checklist (Phase 0)
 
 ### Accounts & projects
-- [ ] Create Supabase project (Free) in an EU region; enable PostGIS, `pg_cron`, `pg_net`.
+- [x] Create Supabase project (Free) in an EU region; enable PostGIS, `pg_cron`, `pg_net`.
 - [ ] Enable **anonymous sign-ins** in Supabase Auth.
 - [ ] Create Vercel project (Hobby) for `services/core`; pin the function region to the same EU area as Supabase.
 - [ ] Create Expo account + EAS project; configure FCM (Android) and APNs (iOS) credentials for Expo Push.
