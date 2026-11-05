@@ -20,3 +20,4 @@ Format: lightweight [MADR](https://adr.github.io/madr/). Copy [`template.md`](te
 | [0014](0014-camera-pipeline-feature-flagged.md) | Camera pipeline built but feature-flagged off in MVP | Accepted |
 | [0015](0015-regulated-zones-loaded-not-offered.md) | Regulated zones loaded and labelled, not offered in MVP | Accepted |
 | [0016](0016-dedicated-core-database-role.md) | Dedicated database role for the announcement API | Accepted |
+| [0017](0017-captcha-on-anonymous-sign-in.md) | CAPTCHA on anonymous sign-in | Accepted |
