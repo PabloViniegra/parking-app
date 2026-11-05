@@ -12,7 +12,45 @@ import (
 	"github.com/PabloViniegra/parking-app/services/core/internal/availability/adapters/postgres"
 	"github.com/PabloViniegra/parking-app/services/core/internal/availability/domain"
 	"github.com/PabloViniegra/parking-app/services/core/internal/availability/ports"
+	coverage "github.com/PabloViniegra/parking-app/services/core/internal/coverage/adapters/postgres"
 )
+
+func TestSubmissions_DedicatedRuntimeCanAnnounceAndReplay(t *testing.T) {
+	ctx := context.Background()
+	pool := newTestPool(t, ctx)
+	spotID, eventID, driver, _ := newTestIDs(t, ctx, pool)
+	createTestReleaser(t, ctx, pool, driver)
+	cleanupTestData(t, ctx, pool, spotID, eventID, driver)
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	if _, err := tx.Exec(ctx, `set local role parking_core`); err != nil {
+		t.Fatal(err)
+	}
+	policy, err := coverage.NewPolicies(tx).Locate(ctx, 40.4168, -3.7038)
+	if err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 11, 5, 12, 0, 0, 0, time.UTC)
+	spot, err := domain.NewSpot(spotID, driver, policy.CoverageID, 622500375513628671, 40.4168, -3.7038, policy.Confidence, now, policy.TTL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	repository := postgres.NewSubmissions(tx)
+	first, err := repository.Save(ctx, eventID, "same", spot, domain.NewSpotAnnouncedEvent(eventID, spot, now))
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := repository.Save(ctx, eventID, "same", spot, domain.NewSpotAnnouncedEvent(eventID, spot, now))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first.ID != spotID || second.ID != spotID || !first.ExpiresAt.Equal(second.ExpiresAt) {
+		t.Fatalf("first=%+v second=%+v", first, second)
+	}
+}
 
 func TestSubmissions_StoresAnnouncementAndReceipt(t *testing.T) {
 	ctx := context.Background()

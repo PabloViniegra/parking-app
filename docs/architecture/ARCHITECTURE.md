@@ -128,7 +128,7 @@ Eligibility → score → wave of one → 12 s window → next. Search time accr
 
 **Row Level Security:** enabled on every table, **default deny**. The mobile app never queries tables directly (except Realtime channels, if enabled); all reads/writes go through the core API using a dedicated database role.
 
-The `anon` and `authenticated` roles have no direct privileges on application tables in `public`. New tables, sequences and functions created by `postgres` in `public` do not automatically grant these roles access. The global `PUBLIC` execute default is also removed for future functions created by `postgres`; intentional callers must receive explicit grants. Existing `service_role` grants are preserved. Objects created by other owners, including `supabase_admin`, require a separate privilege review. Run `make db-test` against local Supabase to verify the privilege boundary.
+The `anon` and `authenticated` roles have no direct privileges on application tables in `public`. The backend uses the restricted `parking_core` role and role-specific RLS policies (ADR-0016); it cannot bypass RLS. New tables, sequences and functions created by `postgres` in `public` do not automatically grant client roles access. The global `PUBLIC` execute default is also removed for future functions created by `postgres`; intentional callers must receive explicit grants. Existing `service_role` grants are preserved. Objects created by other owners, including `supabase_admin`, require a separate privilege review. Run `make db-test` against local Supabase to verify the privilege boundary.
 
 ---
 

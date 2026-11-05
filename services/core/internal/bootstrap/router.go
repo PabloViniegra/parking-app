@@ -30,7 +30,7 @@ func NewRouter() http.Handler {
 		Submit(context.Context, string, string, application.Submission) (application.Announcement, error)
 	} = unavailableSubmissions{}
 	if databaseURL := os.Getenv("DATABASE_URL"); databaseURL != "" {
-		config, err := pgxpool.ParseConfig(databaseURL)
+		config, err := NewDatabaseConfig(databaseURL, os.Getenv("DATABASE_CA_CERT"))
 		if err == nil {
 			config.MaxConns = 3
 			config.MaxConnIdleTime = time.Minute

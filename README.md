@@ -113,7 +113,7 @@ parking-app/
 
 ### Accounts & projects
 - [x] Create Supabase project (Free) in an EU region; enable PostGIS, `pg_cron`, `pg_net`.
-- [ ] Enable **anonymous sign-ins** in Supabase Auth.
+- [x] Enable **anonymous sign-ins** in Supabase Auth.
 - [x] Create Vercel project for `services/core`; deploy `/healthz` in Paris (`cdg1`), matching Supabase `eu-west-3`.
 - [ ] Create Expo account + EAS project; configure FCM (Android) and APNs (iOS) credentials for Expo Push.
 - [x] Create GitHub repository — public, so `services/vision` can be scheduled on GitHub Actions (see ADR-0014).
@@ -142,6 +142,7 @@ parking-app/
 | Variable | Purpose |
 |---|---|
 | `DATABASE_URL` | Supabase pooler connection string (transaction mode) |
+| `DATABASE_CA_CERT` | Optional PEM root CA for `sslmode=verify-full`; required for the hosted Supabase pooler |
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_PUBLISHABLE_KEY` | Publishable API key for server-side access-token verification through Supabase Auth |
 | `EXPO_ACCESS_TOKEN` | Authenticated access to Expo Push API |
@@ -155,9 +156,9 @@ Copy [`.env.example`](.env.example) to `.env`; never commit real values.
 
 `POST /v1/spots` accepts a confirmed departure with `latitude`, `longitude` and positive `accuracyM`. Send `Content-Type: application/json`, the driver's Supabase access token as `Authorization: Bearer …`, and a UUID `Idempotency-Key`. The server verifies the token through Supabase Auth `/auth/v1/user`, derives the Releaser identity, locates active Coverage, calculates H3 and confidence from Coverage policies, and saves the Spot and CloudEvent atomically. New Releasers use the approved provisional confidence defaults (`0.8 × 0.8`); reputation-derived reliability remains pending. A successful response is HTTP 201 with `id` and `expiresAt`; it does not yet trigger matching or push.
 
-Configure `DATABASE_URL`, `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` before enabling writes. The database URL must use an appropriately provisioned backend role, never a credential sent to the app; runtime role provisioning and hosted environment configuration are not performed by this implementation. Missing configuration fails closed while `/healthz` remains a liveness probe. The current verifier uses Auth rather than the scaffolded `SUPABASE_JWKS_URL`; this adds an Auth round trip whose latency still needs measuring. Transactions use no prepared statements for transaction-pooler compatibility.
+Configure `DATABASE_URL`, `DATABASE_CA_CERT`, `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` before enabling hosted writes. Use the `parking_core` role provisioned by ADR-0016, not an administrator credential. Its migration grants only announcement-specific access and creates the role without login; provision login and a generated password outside version control. Store the password-bearing URL as a sensitive Vercel variable, never in the app. Use pooler transaction mode with `sslmode=verify-full`; `DATABASE_CA_CERT` supplies the Supabase root CA in PEM form without disabling certificate or hostname verification. Missing configuration fails closed while `/healthz` remains a liveness probe. The current verifier uses Auth rather than the scaffolded `SUPABASE_JWKS_URL`; this adds an Auth round trip whose latency still needs measuring. Transactions use no prepared statements for transaction-pooler compatibility.
 
-The two new announcement migrations must be applied before using the API. Idempotency receipts inherit Spot retention through cascading deletion and contain no coordinates. Identical retries retain the original ID and expiry; different input with the same driver/key returns 409. Run `make core-integration` and `make db-test` against local Supabase. Neither API deployment nor applying these migrations to production is implied by committing the implementation.
+Apply the announcement and backend-role migrations before using the API. Idempotency receipts inherit Spot retention through cascading deletion and contain no coordinates. Identical retries retain the original ID and expiry; different input with the same driver/key returns 409. Run `make core-integration` and `make db-test` against local Supabase. Neither API deployment nor applying these migrations to production is implied by committing the implementation.
 
 ---
 
