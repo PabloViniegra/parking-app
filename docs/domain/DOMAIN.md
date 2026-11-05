@@ -107,7 +107,7 @@ DepartureIntent ───────────────► ANNOUNCED
 ### Availability
 - **BR-A1** A Spot is created **only** when the Releaser **explicitly confirms** the departure prompt. No answer = no Spot. (Opt-in setting "Always share automatically" exists, default OFF.) → ADR-0009
 - **BR-A2** Default TTL: **180 s** (configurable per city and per zone density).
-- **BR-A3** Confidence starts at `base(source) × reliability(releaser)` and decays linearly to 0 at TTL. Confirmations raise it; refutations end the Spot.
+- **BR-A3** Confidence starts at `base(source) × reliability(releaser)` and decays linearly to 0 at TTL. For an explicitly confirmed departure, the initial Coverage-configurable base is **0.8** and the initial reliability for a new Releaser is **0.8**, yielding confidence **0.64**. These are provisional, uncalibrated defaults. Confirmations raise confidence; refutations end the Spot.
 - **BR-A4** One **strong refutation** (seeker arrived, did not park and answered "No") or **two weak refutations** (passers-by) → `REFUTED`.
 - **BR-A5** Spots in regulated zones are labelled; in MVP they are **not offered**.
 - **BR-A6** We never ask for or store licence plate or car model.

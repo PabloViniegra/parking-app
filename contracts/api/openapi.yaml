@@ -6,6 +6,73 @@ info:
 servers:
   - url: /
 paths:
+  /v1/spots:
+    post:
+      operationId: announceSpot
+      summary: Announce a confirmed departure
+      description: >-
+        Planned: this operation is not yet implemented. The authenticated
+        Releaser explicitly confirms a departure. Identity,
+        identifiers, time, Coverage, H3 cell and confidence are determined by
+        the server, not supplied by the client.
+      security:
+        - supabaseJwt: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          description: >-
+            A client-generated UUID. Reusing it for the same Releaser and request
+            returns the original result; reuse with different input is rejected.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [latitude, longitude, accuracyM]
+              properties:
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                accuracyM:
+                  type: number
+                  exclusiveMinimum: 0
+      responses:
+        '201':
+          description: Spot announced, or the original result of a matching retry
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [id, expiresAt]
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  expiresAt:
+                    type: string
+                    format: date-time
+        '400':
+          description: Invalid request or idempotency key
+        '401':
+          description: Missing or invalid access token
+        '409':
+          description: Idempotency key already used for different input
+        '422':
+          description: Location is outside active Coverage
+        '503':
+          description: A required service is unavailable
   /healthz:
     get:
       operationId: getHealth
