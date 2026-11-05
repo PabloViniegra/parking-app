@@ -8,10 +8,30 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/PabloViniegra/parking-app/services/core/internal/coverage/domain"
+	"github.com/PabloViniegra/parking-app/services/core/internal/coverage/ports"
 )
 
 type rowQuerier interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
+}
+
+func (p *Policies) Locate(ctx context.Context, latitude, longitude float64) (domain.AnnouncementPolicy, error) {
+	var policy domain.AnnouncementPolicy
+	var ttlSeconds int64
+	var base, reliability float64
+	err := p.db.QueryRow(ctx, `select id::text, (policies->>'spot_ttl_seconds')::bigint,
+	  (policies->>'confirmed_departure_base')::double precision,
+	  (policies->>'new_releaser_reliability')::double precision
+	  from public.coverage_areas where active
+	  and extensions.st_covers(geom,extensions.st_setsrid(extensions.st_makepoint($1,$2),4326)::extensions.geography)
+	  order by slug limit 1`, longitude, latitude).Scan(&policy.CoverageID, &ttlSeconds, &base, &reliability)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return policy, ports.ErrOutsideCoverage
+	}
+	if err != nil {
+		return policy, fmt.Errorf("locate Coverage: %w", err)
+	}
+	return domain.NewAnnouncementPolicy(policy.CoverageID, ttlSeconds, base, reliability)
 }
 
 type Policies struct {

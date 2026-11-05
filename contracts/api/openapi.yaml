@@ -11,10 +11,10 @@ paths:
       operationId: announceSpot
       summary: Announce a confirmed departure
       description: >-
-        Planned: this operation is not yet implemented. The authenticated
-        Releaser explicitly confirms a departure. Identity,
+        The authenticated Releaser explicitly confirms a departure. Identity,
         identifiers, time, Coverage, H3 cell and confidence are determined by
-        the server, not supplied by the client.
+        the server, not supplied by the client. The JSON body is limited to
+        4096 bytes. Matching and push delivery are not part of this operation yet.
       security:
         - supabaseJwt: []
       parameters:
@@ -24,6 +24,9 @@ paths:
           description: >-
             A client-generated UUID. Reusing it for the same Releaser and request
             returns the original result; reuse with different input is rejected.
+            Keys are retained with the Spot until the hourly privacy job deletes
+            it at an age of 23 to 24 hours. Retries may return an expired Spot during
+            that period. JSON property ordering does not change request identity.
           schema:
             type: string
             format: uuid

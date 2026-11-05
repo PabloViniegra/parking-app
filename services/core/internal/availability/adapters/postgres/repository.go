@@ -77,7 +77,7 @@ func (r *Repository) Announce(ctx context.Context, spot domain.Spot, event domai
 	_, err = tx.Exec(ctx, `
 		insert into public.outbox (id, type, aggregate_id, payload, occurred_at)
 		values ($1, $2, $3, $4, $5)
-	`, event.ID(), event.Type(), event.SpotID(), payload, event.OccurredAt())
+	`, event.ID(), event.Type(), event.SpotID(), string(payload), event.OccurredAt())
 	if err != nil {
 		return fmt.Errorf("insert Spot event: %w", err)
 	}

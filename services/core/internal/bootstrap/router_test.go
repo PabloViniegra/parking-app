@@ -18,6 +18,7 @@ func TestRouter(t *testing.T) {
 	}{
 		{name: "health check responds ok", method: http.MethodGet, target: "/healthz", wantStatus: http.StatusOK, wantBody: `{"status":"ok"}` + "\n"},
 		{name: "health check rejects other methods", method: http.MethodPost, target: "/healthz", wantStatus: http.StatusMethodNotAllowed},
+		{name: "announcements require authentication", method: http.MethodPost, target: "/v1/spots", wantStatus: http.StatusUnauthorized},
 		{name: "unknown route is not found", method: http.MethodGet, target: "/v1/unknown", wantStatus: http.StatusNotFound},
 	}
 

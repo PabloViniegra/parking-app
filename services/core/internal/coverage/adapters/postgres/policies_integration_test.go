@@ -44,6 +44,21 @@ func TestPolicies_MadridCoverageMatchesKnownLocations(t *testing.T) {
 	}
 }
 
+func TestPolicies_LocatesMadridWithApprovedInitialConfidence(t *testing.T) {
+	pool, err := pgxpool.New(t.Context(), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer pool.Close()
+	policy, err := postgres.NewPolicies(pool).Locate(t.Context(), 40.4168, -3.7038)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if policy.CoverageID != "00000000-0000-4000-8000-000000000001" || policy.TTL != 180*time.Second || policy.Confidence < 0.63999999 || policy.Confidence > 0.64000001 {
+		t.Fatalf("policy = %+v, want Madrid, 180s, 0.64", policy)
+	}
+}
+
 func TestPolicies_GetPolicyReadsActiveMadridPolicy(t *testing.T) {
 	pool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {

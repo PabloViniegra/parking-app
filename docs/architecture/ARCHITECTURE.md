@@ -113,6 +113,7 @@ Eligibility → score → wave of one → 12 s window → next. Search time accr
 |---|---|---|
 | `drivers` | id (auth uid), created_at, settings jsonb | account lifetime |
 | `spots` | id, cell_r10, location (geography), status, confidence, ttl_at, releaser_id, coverage_id, created_at | precise location 24 h, then cell only |
+| `spot_announcements` | releaser_id, idempotency_key, fingerprint, spot_id | deleted with the Spot by cascade (≤ 24 h) |
 | `search_sessions` | id, driver_id, origin_cell, radius_m, search_seconds, last_cell, status, started_at | 24 h |
 | `offers` | id, spot_id, seeker_id, wave, offered_at, expires_at, outcome | 24 h → aggregates |
 | `claims` | id, spot_id, seeker_id, expires_at, outcome | 24 h → aggregates |

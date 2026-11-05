@@ -130,7 +130,7 @@ parking-app/
 - [x] Load the IGN Comunidad de Madrid boundary and activate its Coverage area through a migration. See [source and attribution](docs/data-sources/DATA_SOURCES.md#coverage-boundary) and apply the migration to each environment separately.
 - [x] Contract: `availability.spot.announced.v1` event schema.
 - [x] Hourly retention: aggregate Spots by H3 cell and UTC day, delete individual Spots after 23 hours, and retain outbox payloads without Releaser identifiers for seven days.
-- [ ] OpenAPI: envelope schema and `/healthz` are done; `/v1` routes remain to be defined before handlers.
+- [ ] OpenAPI: envelope schema, `/healthz` and `POST /v1/spots` are defined; remaining `/v1` routes are pending.
 - [x] CI: lint + tests + architecture tests for Go; lint + type-check for mobile; local migration and PostgreSQL adapter checks.
 - [ ] Ingestion: OSM street parking + Madrid SER loaded for Comunidad de Madrid.
 - [ ] Keep-alive workflow for Supabase during development (free projects pause after 7 days idle).
@@ -143,13 +143,21 @@ parking-app/
 |---|---|
 | `DATABASE_URL` | Supabase pooler connection string (transaction mode) |
 | `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_JWKS_URL` | Verify user JWTs issued by Supabase Auth |
+| `SUPABASE_PUBLISHABLE_KEY` | Publishable API key for server-side access-token verification through Supabase Auth |
 | `EXPO_ACCESS_TOKEN` | Authenticated access to Expo Push API |
 | `INTERNAL_TIMERS_SECRET` | Shared secret for `pg_net` → `/internal/timers/fire` |
 | `FEATURE_VISION_ENABLED` | `false` in MVP |
 | `DEFAULT_CITY` | `madrid-region` |
 
 Copy [`.env.example`](.env.example) to `.env`; never commit real values.
+
+### Spot announcement API
+
+`POST /v1/spots` accepts a confirmed departure with `latitude`, `longitude` and positive `accuracyM`. Send `Content-Type: application/json`, the driver's Supabase access token as `Authorization: Bearer …`, and a UUID `Idempotency-Key`. The server verifies the token through Supabase Auth `/auth/v1/user`, derives the Releaser identity, locates active Coverage, calculates H3 and confidence from Coverage policies, and saves the Spot and CloudEvent atomically. New Releasers use the approved provisional confidence defaults (`0.8 × 0.8`); reputation-derived reliability remains pending. A successful response is HTTP 201 with `id` and `expiresAt`; it does not yet trigger matching or push.
+
+Configure `DATABASE_URL`, `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` before enabling writes. The database URL must use an appropriately provisioned backend role, never a credential sent to the app; runtime role provisioning and hosted environment configuration are not performed by this implementation. Missing configuration fails closed while `/healthz` remains a liveness probe. The current verifier uses Auth rather than the scaffolded `SUPABASE_JWKS_URL`; this adds an Auth round trip whose latency still needs measuring. Transactions use no prepared statements for transaction-pooler compatibility.
+
+The two new announcement migrations must be applied before using the API. Idempotency receipts inherit Spot retention through cascading deletion and contain no coordinates. Identical retries retain the original ID and expiry; different input with the same driver/key returns 409. Run `make core-integration` and `make db-test` against local Supabase. Neither API deployment nor applying these migrations to production is implied by committing the implementation.
 
 ---
 

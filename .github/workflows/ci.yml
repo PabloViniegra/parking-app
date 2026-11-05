@@ -43,7 +43,7 @@ jobs:
       - run: supabase start
       - run: supabase db reset
       - run: supabase test db
-      - run: go test -race -tags=integration ./internal/availability/adapters/postgres ./internal/coverage/adapters/postgres
+      - run: go test -race -tags=integration ./internal/availability/adapters/postgres ./internal/coverage/adapters/postgres ./internal/bootstrap
         working-directory: services/core
         env:
           DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres

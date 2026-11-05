@@ -27,7 +27,7 @@ core-test:
 	cd $(CORE) && go test -race ./...
 
 core-integration:
-	cd $(CORE) && DATABASE_URL="$${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres}" go test -race -tags=integration ./internal/availability/adapters/postgres ./internal/coverage/adapters/postgres
+	cd $(CORE) && DATABASE_URL="$${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres}" go test -race -tags=integration ./internal/availability/adapters/postgres ./internal/coverage/adapters/postgres ./internal/bootstrap
 
 core-lint:
 	cd $(CORE) && go vet ./... && $(GOLANGCI_LINT) run ./...

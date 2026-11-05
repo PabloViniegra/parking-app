@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 
-select plan(20);
+select plan(22);
 
 select is(current_user::text, 'postgres', 'new objects use the postgres default privileges');
 
@@ -12,7 +12,7 @@ select ok(
   format('%s has no direct privileges on %s', role_name, table_name)
 )
 from (values ('anon'), ('authenticated')) as roles(role_name)
-cross join (values ('coverage_areas'), ('spots'), ('outbox'), ('timers'), ('spot_daily_counts')) as tables(table_name);
+cross join (values ('coverage_areas'), ('spots'), ('outbox'), ('timers'), ('spot_daily_counts'), ('spot_announcements')) as tables(table_name);
 
 create table public.client_privileges_probe (id bigint);
 alter table public.client_privileges_probe enable row level security;

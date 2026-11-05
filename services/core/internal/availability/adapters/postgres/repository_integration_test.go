@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/PabloViniegra/parking-app/services/core/internal/availability/adapters/postgres"
@@ -182,7 +183,12 @@ func TestRetention_AggregatesOldSpotsAndRemovesIndividualLocations(t *testing.T)
 
 func newTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	t.Helper()
-	pool, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
+	config, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URL"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
+	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
 		t.Fatal(err)
 	}
